@@ -1,4 +1,4 @@
-    Caesar Shift Cypher
+/*  Caesar Shift Cypher
     Copyright (C) {2016}  {Andrew King}
 
     This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	email: gitgub.the.octagon@gmail.com
 	github: the-octagon
-
+*/
 
 
 
