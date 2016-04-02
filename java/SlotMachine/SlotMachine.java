@@ -125,7 +125,7 @@ public class SlotMachine {
 
 	public static int rollWheel() {
 
-		//random between 1 and 7
+		//random between 0 and 5
 		return 0 + (int)(Math.random() * ((5 - 0) + 0));
 
 	}
