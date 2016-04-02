@@ -30,11 +30,25 @@ public class SlotMachine {
 		//declare local vars
 		int option = 0;
 		String optionString = "";
-		int coins = 44;
+		int[] coinsPlays = {1,0};
 		NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US);
 
 		while (true) {
-			System.out.println("Bank: " + currencyFormatter.format((double)(coins * 0.25)));
+			option = 0;
+			optionString = "";
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println("Bank: " + currencyFormatter.format((double)(coinsPlays[0] * 0.25)));
+			System.out.println("Plays: " + coinsPlays[1]);
+			System.out.println();
 			//print menut to stdout
 			System.out.println("Choose an option:");
 			System.out.println("1. Insert quarter");
@@ -48,8 +62,7 @@ public class SlotMachine {
  			try {
 				option = Integer.parseInt(optionString);
 			} catch (NumberFormatException e) {
-			} catch (InputMismatchException f) {
-			}
+				}
 
 			while (option != 1 && option != 2 && option != 3) {
 
@@ -58,18 +71,17 @@ public class SlotMachine {
 				try {
 					option = Integer.parseInt(optionString);
 				} catch (NumberFormatException e) {
-				} catch (InputMismatchException f) {
-				}
+					}
 
 			}
 
 			//case switch for option menu
 			switch (option) {
 				case 1:
-//					insertCoin();
+					coinsPlays = insertCoin(coinsPlays);
 					break;
 				case 2:
-					pullLever();
+					pullLever(coinsPlays);
 					break;
 				case 3:
 					System.exit(0);
@@ -77,49 +89,75 @@ public class SlotMachine {
 		}
 	}
 
-	public static void pullLever() {
+	public static int[] insertCoin(int[] coinsPlays) {
+
+		if (coinsPlays[0] != 0) {
+			coinsPlays[0] = coinsPlays[0] - 1;
+			coinsPlays[1] = coinsPlays[1] + 1;
+		} else if (coinsPlays[0] == 0 && coinsPlays[1] != 0) {
+			System.out.println("You're out of money, but you have some plays left.");
+		} else {
+			System.out.println("You're out of money and plays! Goodbye.");
+			System.exit(0);
+		}
+
+		return coinsPlays;
+
+	}
+
+
+	public static int[] pullLever(int[] coinsPlays) {
 		int[] wheel = new int[3];
 		String[] wheelHuman = new String[3];
-		int combo = 0;
+		int combo = 8;
 		boolean threeWay = false;
 
-		for (int index = 0; index < 3; index++) {
-			wheel[index] = rollWheel();
-			wheelHuman[index] = getWheelHuman(wheel[index]);
-		}
 
-		if (wheel[0] == wheel[1] && wheel[0] == wheel[2]) {
-			threeWay = true;
-		}
-
-		if (threeWay == true) {
-			if (wheel[0] == 0) {
-				combo = 0;
-			} else if (wheel[0] == 1) {
-				combo = 1;
-			} else if (wheel[0] == 2) {
-				combo = 2;
-			} else if (wheel[0] == 3) {
-				combo = 3;
-			} else if (wheel[0] == 4) {
-				combo = 4;
-			} else if (wheel[0] == 5) {
-				combo = 5;
+		if (coinsPlays[1] != 0) {
+			for (int index = 0; index < 3; index++) {
+				wheel[index] = rollWheel();
+				wheelHuman[index] = getWheelHuman(wheel[index]);
 			}
-		} else if ((wheel[0] == 2|| wheel[0] == 3 || wheel[0] == 4) && (wheel[1] == 2 || wheel[1] == 3 || wheel[1] == 4) && (wheel[2] == 2 || wheel[2] == 3 || wheel[2] == 4)) {
-			combo = 6;
-		} else if (wheel[0] == 5 || wheel[1] == 5 || wheel[2] == 5) {
-			combo = 7;
+
+			if (wheel[0] == wheel[1] && wheel[0] == wheel[2]) {
+				threeWay = true;
+			}
+
+			if (threeWay == true) {
+				if (wheel[0] == 0) {
+					combo = 0;
+				} else if (wheel[0] == 1) {
+					combo = 1;
+				} else if (wheel[0] == 2) {
+					combo = 2;
+				} else if (wheel[0] == 3) {
+					combo = 3;
+				} else if (wheel[0] == 4) {
+					combo = 4;
+				} else if (wheel[0] == 5) {
+					combo = 5;
+				}
+			} else if ((wheel[0] == 2|| wheel[0] == 3 || wheel[0] == 4) && (wheel[1] == 2 || wheel[1] == 3 || wheel[1] == 4) && (wheel[2] == 2 || wheel[2] == 3 || wheel[2] == 4)) {
+				combo = 6;
+			} else if (wheel[0] == 5 || wheel[1] == 5 || wheel[2] == 5) {
+				combo = 7;
+			} else {
+				combo = 8;
+			}
+			coinsPlays[1] = coinsPlays[1] - 1;
+
+//			results(combo);
+
 		} else {
-			combo = 8;
+			System.out.println("You have run out of plays. Please insert more coins.");
 		}
 
-//		results(combo);
 
-		System.out.println(wheel[0] + " " + wheel[1] + " " + wheel[2]);
-		System.out.println(wheelHuman[0] + " " + wheelHuman[1] + " " + wheelHuman[2]);
-		System.out.println(combo);
+//		System.out.println(wheel[0] + " " + wheel[1] + " " + wheel[2]);
+//		System.out.println(wheelHuman[0] + " " + wheelHuman[1] + " " + wheelHuman[2]);
+//		System.out.println(combo);
 
+		return coinsPlays;
 
 	}
 
