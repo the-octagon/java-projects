@@ -19,6 +19,7 @@
 
 //for scanner and exption catching
 import java.util.*;
+import java.text.*;
 
 public class SlotMachine {
 
@@ -29,15 +30,19 @@ public class SlotMachine {
 		//declare local vars
 		int option = 0;
 		String optionString = "";
+		int coins = 44;
+		NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US);
 
 		while (true) {
+			System.out.println("Bank: " + currencyFormatter.format((double)(coins * 0.25)));
 			//print menut to stdout
 			System.out.println("Choose an option:");
-			System.out.println("1. Pull lever");
-			System.out.println("2. exit");	
+			System.out.println("1. Insert quarter");
+			System.out.println("2. Pull lever");
+			System.out.println("3. exit");	
 
 			//input menu option as string
-			optionString = key .nextLine();
+			optionString = key.nextLine();
 
 			//try catch to ensure numerical input
  			try {
@@ -46,12 +51,27 @@ public class SlotMachine {
 			} catch (InputMismatchException f) {
 			}
 
+			while (option != 1 && option != 2 && option != 3) {
+
+				System.out.println("Please choose a valid option.");
+				optionString = key.nextLine();
+				try {
+					option = Integer.parseInt(optionString);
+				} catch (NumberFormatException e) {
+				} catch (InputMismatchException f) {
+				}
+
+			}
+
 			//case switch for option menu
 			switch (option) {
 				case 1:
-					pullLever();
+//					insertCoin();
 					break;
 				case 2:
+					pullLever();
+					break;
+				case 3:
 					System.exit(0);
 			}
 		}
