@@ -132,32 +132,9 @@ public class SlotMachine {
 
 	public static String getWheelHuman(int wheel) {
 		String wheelHuman = new String();
+		String[] wheelHumanArray = {"","Diamonds","Seven","Bar x3","Bar x2","Bar","Cherry"};
 
-		switch (wheel) {
-			case 1:
-				wheelHuman = "Diamonds";
-				break;
-
-			case 2:
-				wheelHuman = "Seven";
-				break;
-
-			case 3:
-				wheelHuman = "Bar x3";
-				break;
-
-			case 4:
-				wheelHuman = "Bar x2";
-				break;
-
-			case 5:
-				wheelHuman = "Bar";
-				break;
-
-			case 6:
-				wheelHuman = "Cherry";
-				break;
-		}
+		wheelHuman = wheelHumanArray[wheel];
 		return wheelHuman;
 
 	}
