@@ -93,7 +93,9 @@ public class SlotMachine {
 		}
 
 		if (threeWay == true) {
-			if (wheel[0] == 1) {
+			if (wheel[0] == 0) {
+				combo = 0;
+			} else if (wheel[0] == 1) {
 				combo = 1;
 			} else if (wheel[0] == 2) {
 				combo = 2;
@@ -103,15 +105,13 @@ public class SlotMachine {
 				combo = 4;
 			} else if (wheel[0] == 5) {
 				combo = 5;
-			} else if (wheel[0] == 6) {
-				combo = 6;
 			}
-		} else if ((wheel[0] == 3|| wheel[0] == 4 || wheel[0] == 5) && (wheel[1] == 3|| wheel[1] == 4 || wheel[1] == 5) && (wheel[2] == 3|| wheel[2] == 4 || wheel[2] == 5)) {
+		} else if ((wheel[0] == 2|| wheel[0] == 3 || wheel[0] == 4) && (wheel[1] == 2 || wheel[1] == 3 || wheel[1] == 4) && (wheel[2] == 2 || wheel[2] == 3 || wheel[2] == 4)) {
+			combo = 6;
+		} else if (wheel[0] == 5 || wheel[1] == 5 || wheel[2] == 5) {
 			combo = 7;
-		} else if (wheel[0] == 6 || wheel[1] == 6 || wheel[2] == 6) {
-			combo = 8;
 		} else {
-			combo = 9;
+			combo = 8;
 		}
 
 //		results(combo);
@@ -126,13 +126,13 @@ public class SlotMachine {
 	public static int rollWheel() {
 
 		//random between 1 and 7
-		return 1 + (int)(Math.random() * ((6 - 1) + 1));
+		return 0 + (int)(Math.random() * ((5 - 0) + 0));
 
 	}
 
 	public static String getWheelHuman(int wheel) {
 		String wheelHuman = new String();
-		String[] wheelHumanArray = {"","Diamonds","Seven","Bar x3","Bar x2","Bar","Cherry"};
+		String[] wheelHumanArray = {"Diamonds","Seven","Bar x3","Bar x2","Bar","Cherry"};
 
 		wheelHuman = wheelHumanArray[wheel];
 		return wheelHuman;
