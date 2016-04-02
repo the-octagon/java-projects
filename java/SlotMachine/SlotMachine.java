@@ -30,7 +30,7 @@ public class SlotMachine {
 		//declare local vars
 		int option = 0;
 		String optionString = "";
-		int[] coinsPlays = {1,0};
+		int[] coinsPlays = {16,0};
 		NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US);
 
 		while (true) {
@@ -51,7 +51,7 @@ public class SlotMachine {
 			System.out.println();
 			//print menut to stdout
 			System.out.println("Choose an option:");
-			System.out.println("1. Insert quarter");
+			System.out.println("1. Insert dollar");
 			System.out.println("2. Pull lever");
 			System.out.println("3. exit");	
 
@@ -92,7 +92,7 @@ public class SlotMachine {
 	public static int[] insertCoin(int[] coinsPlays) {
 
 		if (coinsPlays[0] != 0) {
-			coinsPlays[0] = coinsPlays[0] - 1;
+			coinsPlays[0] = coinsPlays[0] - 4;
 			coinsPlays[1] = coinsPlays[1] + 1;
 		} else if (coinsPlays[0] == 0 && coinsPlays[1] != 0) {
 			System.out.println("You're out of money, but you have some plays left.");
@@ -116,7 +116,6 @@ public class SlotMachine {
 		if (coinsPlays[1] != 0) {
 			for (int index = 0; index < 3; index++) {
 				wheel[index] = rollWheel();
-				wheelHuman[index] = getWheelHuman(wheel[index]);
 			}
 
 			if (wheel[0] == wheel[1] && wheel[0] == wheel[2]) {
@@ -126,36 +125,39 @@ public class SlotMachine {
 			if (threeWay == true) {
 				if (wheel[0] == 0) {
 					combo = 0;
+					coinsPlays[0] = coinsPlays[0] +  2000;
 				} else if (wheel[0] == 1) {
 					combo = 1;
+					coinsPlays[0] = coinsPlays[0] +  500;
 				} else if (wheel[0] == 2) {
 					combo = 2;
+					coinsPlays[0] = coinsPlays[0] +  52;
 				} else if (wheel[0] == 3) {
 					combo = 3;
+					coinsPlays[0] = coinsPlays[0] +  32;
 				} else if (wheel[0] == 4) {
 					combo = 4;
+					coinsPlays[0] = coinsPlays[0] +  16;
 				} else if (wheel[0] == 5) {
 					combo = 5;
+					coinsPlays[0] = coinsPlays[0] +  16;
 				}
 			} else if ((wheel[0] == 2|| wheel[0] == 3 || wheel[0] == 4) && (wheel[1] == 2 || wheel[1] == 3 || wheel[1] == 4) && (wheel[2] == 2 || wheel[2] == 3 || wheel[2] == 4)) {
 				combo = 6;
+				coinsPlays[0] = coinsPlays[0] +  4;
 			} else if (wheel[0] == 5 || wheel[1] == 5 || wheel[2] == 5) {
 				combo = 7;
+				coinsPlays[0] = coinsPlays[0] +  4;
 			} else {
 				combo = 8;
 			}
 			coinsPlays[1] = coinsPlays[1] - 1;
 
-//			results(combo);
+			results(combo, wheel);
 
 		} else {
 			System.out.println("You have run out of plays. Please insert more coins.");
 		}
-
-
-//		System.out.println(wheel[0] + " " + wheel[1] + " " + wheel[2]);
-//		System.out.println(wheelHuman[0] + " " + wheelHuman[1] + " " + wheelHuman[2]);
-//		System.out.println(combo);
 
 		return coinsPlays;
 
@@ -163,56 +165,112 @@ public class SlotMachine {
 
 	public static int rollWheel() {
 
-		//random between 0 and 5
-		return 0 + (int)(Math.random() * ((5 - 0) + 0));
+		//random btwn 0-5
+		int roll = (int)(Math.random() * 5);
+
+		return roll;
 
 	}
 
 	public static String getWheelHuman(int wheel) {
 		String wheelHuman = new String();
-		String[] wheelHumanArray = {"Diamonds","Seven","Bar x3","Bar x2","Bar","Cherry"};
+		String[] wheelHumanArray = {
+			"Diamonds	",
+			"Seven		",
+			"Bar x3		",
+			"Bar x2		",
+			"Bar		",
+			"Cherry		"};
 
 		wheelHuman = wheelHumanArray[wheel];
 		return wheelHuman;
 
 	}
-/*
+
 	public static void results(int combo, int[] wheel) {
+
 		switch(combo) {
+			case 0:
+				printWheelHuman(wheel);
+				System.out.println();
+				System.out.println("JACKPOT!");
+				System.out.println("You win 2000 quarters!");
+				break;
+
 			case 1:
-				
+				printWheelHuman(wheel);
+				System.out.println("WINNER!");
+				System.out.println("You win 500 quarters!");
 				break;
 
 			case 2:
-				
+				printWheelHuman(wheel);
+				System.out.println("Winner!");
+				System.out.println("You win 52 quarters!");
 				break;
 
 			case 3:
-				
+				printWheelHuman(wheel);
+				System.out.println("Winner!");
+				System.out.println("You win 32 quarters!");
 				break;
 
 			case 4:
-				
+				printWheelHuman(wheel);
+				System.out.println("Winner!");
+				System.out.println("You win 16 quarters!");
 				break;
 
 			case 5:
-				
+				printWheelHuman(wheel);
+				System.out.println("Winner!");
+				System.out.println("You win 16 quarters!");
 				break;
 
 			case 6:
-				
+				printWheelHuman(wheel);
+				System.out.println("Winner!");
+				System.out.println("You win 4 quarters!");
 				break;
 
 			case 7:
-				
+				printWheelHuman(wheel);
+				System.out.println("Winner!");
+				System.out.println("You win 4 quarters!");
 				break;
 
 			case 8:
-				
+				printWheelHuman(wheel);
+				System.out.println("Better luck next time!");
+				System.out.println();
 				break;
 		}
 
 	}
-*/
+
+	public static void printWheelHuman(int[] wheel) {
+
+                int[] wheelPlusOne = new int[3];
+                int[] wheelMinusOne = new int[3];
+
+
+                for (int index = 0; index < 3; index++) {
+                        if  (wheel[index] == 0) {
+                                wheelMinusOne[index] = 5;
+                                wheelPlusOne[index] = 1;
+                        } else if (wheel[index] == 5) {
+                                wheelMinusOne[index] = 4;
+                                wheelPlusOne[index] = 0;
+                        } else {
+                                wheelMinusOne[index] = wheel[index] - 1;
+                                wheelPlusOne[index] = wheel[index] + 1;
+                        }
+                }
+			System.out.println("     		" + getWheelHuman(wheelMinusOne[0]) + "" + getWheelHuman(wheelMinusOne[1]) + "" + getWheelHuman(wheelMinusOne[2]));
+			System.out.println("-----		" + getWheelHuman(wheel[0]) + "" + getWheelHuman(wheel[1]) + "" + getWheelHuman(wheel[2]) + "-----");
+			System.out.println("     		" + getWheelHuman(wheelPlusOne[0]) + "" + getWheelHuman(wheelPlusOne[1]) + "" + getWheelHuman(wheelPlusOne[2]));
+
+	}
+
 }
 
