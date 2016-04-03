@@ -193,56 +193,47 @@ public class SlotMachine {
 			case 0:
 				printWheelHuman(wheel);
 				System.out.println();
-				System.out.println("JACKPOT!");
-				System.out.println("You win 2000 quarters!");
+				youWin("JACKPOT!",2000);
 				break;
 
 			case 1:
 				printWheelHuman(wheel);
-				System.out.println("WINNER!");
-				System.out.println("You win 500 quarters!");
+				youWin("WINNER!", 500);
 				break;
 
 			case 2:
 				printWheelHuman(wheel);
-				System.out.println("Winner!");
-				System.out.println("You win 52 quarters!");
+				youWin("Winner!",52);
 				break;
 
 			case 3:
 				printWheelHuman(wheel);
-				System.out.println("Winner!");
-				System.out.println("You win 32 quarters!");
+				youWin("Winner!",32);
 				break;
 
 			case 4:
 				printWheelHuman(wheel);
-				System.out.println("Winner!");
-				System.out.println("You win 16 quarters!");
+				youWin("Winner!",16);
 				break;
 
 			case 5:
 				printWheelHuman(wheel);
-				System.out.println("Winner!");
-				System.out.println("You win 16 quarters!");
+				youWin("Winner!",16);
 				break;
 
 			case 6:
 				printWheelHuman(wheel);
-				System.out.println("Winner!");
-				System.out.println("You win 4 quarters!");
+				youWin("Winner!",4);
 				break;
 
 			case 7:
 				printWheelHuman(wheel);
-				System.out.println("Winner!");
-				System.out.println("You win 4 quarters!");
+				youWin("Winner!",4);
 				break;
 
 			case 8:
 				printWheelHuman(wheel);
-				System.out.println("Better luck next time!");
-				System.out.println();
+				youWin("Better luck next time!",0);
 				break;
 		}
 
@@ -272,5 +263,13 @@ public class SlotMachine {
 
 	}
 
+	public static void youWin(String alert, int prize) {
+		System.out.println(alert);
+		if (prize > 0) {
+			System.out.println("You win " + prize + " quarters!");
+		} else {
+			System.out.println();
+		}
+	}
 }
 
