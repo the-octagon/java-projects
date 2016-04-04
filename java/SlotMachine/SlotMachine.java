@@ -25,13 +25,14 @@ public class SlotMachine {
 
 	//key = Scanner object reading keyboard
 	static Scanner key = new Scanner(System.in);
+	static NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US);
 
 	public static void main(String[] args) {
 		//declare local vars
 		int option = 0;
 		String optionString = "";
-		int[] coinsPlays = {16,0};
-		NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US);
+		//bank, plays, and money spent
+		int[] coinsPlays = {0,0,0};
 
 		while (true) {
 			option = 0;
@@ -51,9 +52,10 @@ public class SlotMachine {
 			System.out.println();
 			//print menut to stdout
 			System.out.println("Choose an option:");
-			System.out.println("1. Insert dollar");
-			System.out.println("2. Pull lever");
-			System.out.println("3. exit");	
+			System.out.println("1. Add money to bank");
+			System.out.println("2. Buy a play (four quarters)");
+			System.out.println("3. Pull lever");
+			System.out.println("4. Exit");	
 
 			//input menu option as string
 			optionString = key.nextLine();
@@ -64,7 +66,7 @@ public class SlotMachine {
 			} catch (NumberFormatException e) {
 				}
 
-			while (option != 1 && option != 2 && option != 3) {
+			while (option != 1 && option != 2 && option != 3 && option != 4) {
 
 				System.out.println("Please choose a valid option.");
 				optionString = key.nextLine();
@@ -81,15 +83,27 @@ public class SlotMachine {
 					coinsPlays = insertCoin(coinsPlays);
 					break;
 				case 2:
-					pullLever(coinsPlays);
+					coinsPlays = buyPlay(coinsPlays);
 					break;
 				case 3:
+					pullLever(coinsPlays);
+					break;
+				case 4:
+
+				printResults(coinsPlays);
 					System.exit(0);
 			}
 		}
 	}
 
-	public static int[] insertCoin(int[] coinsPlays) {
+	public static int[] insertCoin(int[] coinsPlays){
+		coinsPlays[0] = coinsPlays[0] + 4;
+		coinsPlays[2] = coinsPlays[2] + 4;
+		
+		return coinsPlays;
+	}
+	
+	public static int[] buyPlay(int[] coinsPlays) {
 
 		if (coinsPlays[0] != 0) {
 			coinsPlays[0] = coinsPlays[0] - 4;
@@ -97,8 +111,7 @@ public class SlotMachine {
 		} else if (coinsPlays[0] == 0 && coinsPlays[1] != 0) {
 			System.out.println("You're out of money, but you have some plays left.");
 		} else {
-			System.out.println("You're out of money and plays! Goodbye.");
-			System.exit(0);
+			System.out.println("Deposit more coins to continue.");
 		}
 
 		return coinsPlays;
@@ -270,6 +283,10 @@ public class SlotMachine {
 		} else {
 			System.out.println();
 		}
+	}
+	
+	public static void printResults(int[] coinsPlays) {
+		System.out.println("You spent a total of " + currencyFormatter.format((double)coinsPlays[2]/4) + " and are walking away with " + currencyFormatter.format((double)coinsPlays[0]/4));
 	}
 }
 
