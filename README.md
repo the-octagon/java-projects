@@ -1,3 +1,5 @@
-# projects
+# Misc practice
 
-this is my repo of personal practice programs. 
+'''
+this is my personal repo of practice programs in various languages. 
+'''
