@@ -1,3 +1,5 @@
+import java.util.Date;
+
 class PrimeSieve {
 	public static void main(String[] args) {
 		boolean primes[];
@@ -23,6 +25,8 @@ class PrimeSieve {
 	}
 	
 	static boolean[] calcPrimes(int max) {
+		long startTime = System.currentTimeMillis();
+
 		max = ++max;
 		boolean primes[] = new boolean[max];
 		int index;
@@ -40,7 +44,8 @@ class PrimeSieve {
 				}
 			}
 		}
-	
+		long totalTime = System.currentTimeMillis() - startTime;
+		System.out.println("Calculations took " + totalTime + "ms");
 		return primes;
 	}
 	
