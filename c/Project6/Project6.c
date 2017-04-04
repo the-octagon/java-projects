@@ -291,3 +291,4 @@ int readInFromFile( char fileName[], dataPoint_t *dataSetPtr) {
 void rollCredits (void) {
 	printf( "\n\nResults were provided by Andrew King\n\n" );
 }
+
