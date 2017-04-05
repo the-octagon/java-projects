@@ -5,51 +5,52 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define NUM_YEARS 7
-#define LINE_LENGTH 25
-#define MIN_MODE 0
-#define MAX_MODE 1
+#define NUM_ITEMS 100
+#define LINE_LENGTH 100
+//#define MIN_MODE 0
+//#define MAX_MODE 1
 #define SUCCESS 0
 #define FILE_READ_ERROR 1
+#define LEN_NAME 75
 
 typedef struct {
-    int year;
-    int sampleSize;
-    double percentage;
-} dataPoint_t;
+    char name[LEN_NAME];
+    char city[LEN_NAME];
+    char state[2+1];
+    double distance;
+} facility_t;
 
-int calculateExpressors( double percentage, int sampleSize );
-int calculateHighestOrLowest( dataPoint_t *dataSetPtr, int mode );
-void displayWelcomeMessage( void );
+//int calculateExpressors( double percentage, int sampleSize );
+//int calculateHighestOrLowest( dataPoint_t *dataSetPtr, int mode );
+//void displayWelcomeMessage( void );
 char getYesOrNo( void );
 void getFileName( char *fileNamePtr, char defaultFileName[] );
-int getSelection( dataPoint_t *dataSetPtr );
-int isYearValid( dataPoint_t *dataSetPtr, int year );
-int openAndReadFile( char defaultFileName[], dataPoint_t *dataSetPtr );
-void printSummary( dataPoint_t *dataSetPtr, int selection );
-int readInFromFile( char fileName[], dataPoint_t *dataSetPtr );
+//int getSelection( dataPoint_t *dataSetPtr );
+//int isYearValid( dataPoint_t *dataSetPtr, int year );
+int openAndReadFile( char defaultFileName[], facility_t *facilitiesPtr );
+//void printSummary( dataPoint_t *dataSetPtr, int selection );
+int readInFromFile( char fileName[], facility_t *facilitiesPtr );
 void rollCredits( void );
 
 extern int errno;
 
 int main( void ){
 	int index = 0, selection;
-	dataPoint_t dataSet[ NUM_YEARS ] = {0};
-	char defaultFileName[] = "AutismRates.txt", exit;
+	facility_t facilities[ NUM_ITEMS ] = {0};
+	char defaultFileName[] = "AutismSpeaksInfo.txt", exit;
 
-    displayWelcomeMessage();
+    //displayWelcomeMessage();
 
-    if( openAndReadFile( defaultFileName, &dataSet[ 0 ] ) == SUCCESS ) {
+    if( openAndReadFile( defaultFileName, &facilities[ 0 ] ) == SUCCESS ) {
         do {
-            selection = getSelection( &dataSet[ 0 ] );
-            printSummary ( &dataSet[ 0 ], selection );
+            //selection = getSelection( &dataSet[ 0 ] );
+            //printSummary ( &dataSet[ 0 ], selection );
             printf( "Do you want to exit? " );
             exit = getYesOrNo();
         } while( exit != 'y' );
     }
 
     rollCredits();
-    getchar();
 	return SUCCESS;
 }
 
@@ -63,7 +64,7 @@ int calculateExpressors( double percentage, int sampleSize ){
 // take a pointer to an array of dataPoint_t's and returns the index of the highest or lowest percentage depending on the mode, MIN_MODE for lowest, MAX_MODE for highest
 // takes parameters of pointer to first dataPoint_t in an array holding percentage member and integer denoting either max or min mode
 // returns the integer index of the highest or lowest percentage
-int calculateHighestOrLowest( dataPoint_t *dataSetPtr, int mode ){
+/*int calculateHighestOrLowest( dataPoint_t *dataSetPtr, int mode ){
     int index, result = 0;
 
 	if( mode == MIN_MODE ) {
@@ -82,7 +83,7 @@ int calculateHighestOrLowest( dataPoint_t *dataSetPtr, int mode ){
 	}
 
 	return result;
-}
+}*/
 
 // consumes the remaining data in stdin after input is accepted, preventing unwanted data from remaining to be inadverntaly accepted at next read-in
 // accepts nothing
@@ -107,7 +108,7 @@ void displayWelcomeMessage( void ){
 void getFileName( char *fileNamePtr, char defaultFileName[] ) {
     char fileName[ FILENAME_MAX ];
     char illegalChars[] = "\"*+,/:;<=>?\[]|";
-    int invalidCharPresent = 0;
+    int invalidCharPresent;
     int index, loopLimit = strlen( illegalChars );
 
     printf( "Enter a file name (default: %s): ", defaultFileName );
@@ -119,6 +120,7 @@ void getFileName( char *fileNamePtr, char defaultFileName[] ) {
     }
 
     do{
+        invalidCharPresent = 0;
         for( index = 0; index < loopLimit; index++ ) {
             if( strchr( fileName, illegalChars[ index ] ) != NULL ){
                 invalidCharPresent = 1;
@@ -140,7 +142,7 @@ void getFileName( char *fileNamePtr, char defaultFileName[] ) {
 // takes an pointer to an array of dataPoint_t's with member year as parameter
 // dependent function: isYearValid()
 // returns an integer indicating the users choice
-int getSelection( dataPoint_t *dataSetPtr ) {
+/*int getSelection( dataPoint_t *dataSetPtr ) {
 	int index, selection, year;
 	char all, c, input[ 5 ];
 
@@ -171,7 +173,7 @@ int getSelection( dataPoint_t *dataSetPtr ) {
 	}
 
 	return selection;
-}
+}*/
 
 // accept yes or no, validating to only accept 'y', 'Y', 'n', or 'N', returning the choice
 // takes no parameters
@@ -196,7 +198,7 @@ char getYesOrNo( void ) {
 // takes valid years and a choice, returns the first index of the year if valid or -1 if not found
 // takes a pointer to an array of DataPoint_t's containing integer member year and an integer year as parameters
 // returns an integer holding the first index of the year if valid or -1 in not found
-int isYearValid( dataPoint_t *dataSetPtr, int year ) {
+/*int isYearValid( dataPoint_t *dataSetPtr, int year ) {
 	int index, position = -1;
 
 	for( index = 0; index <= NUM_YEARS - 1; index = index + 1 ) {
@@ -207,19 +209,19 @@ int isYearValid( dataPoint_t *dataSetPtr, int year ) {
 	}
 
 	return position;
-}
+}*/
 
 // opens a file given a specified file name (or using program default) and populates an array of dataPoint_t structs
 // accepts char array containing the default file name and a pointer to an array of dataPoint_t structs
 // returns an integer denoting success
-int openAndReadFile( char defaultFileName[], dataPoint_t *dataSetPtr ) {
+int openAndReadFile( char defaultFileName[], facility_t *facilitiesPtr ) {
     char tryAgain;
     char fileName[ FILENAME_MAX ];
 
     do {
         getFileName( &fileName[ 0 ], defaultFileName );
 
-        if( readInFromFile( &fileName[ 0 ], dataSetPtr ) == SUCCESS ) {
+        if( readInFromFile( &fileName[ 0 ], facilitiesPtr ) == SUCCESS ) {
             return SUCCESS;
         } else {
             printf( "Try again? " );
@@ -233,7 +235,7 @@ int openAndReadFile( char defaultFileName[], dataPoint_t *dataSetPtr ) {
 // takes an integer array of years, a double array of percentages, an integer array of sample sizes, and an integer indicating the users choice
 // dependent function: calculateExpressors() calculateHighestOrLowest()
 // returns nothing
-void printSummary( dataPoint_t *dataSetPtr, int selection ){
+/*void printSummary( dataPoint_t *dataSetPtr, int selection ){
     int index, highest, lowest;
 
 	printf( "\n\nYear\t\tTimes Observed\t\tSample Size\t\tPercentage\n" );
@@ -248,20 +250,20 @@ void printSummary( dataPoint_t *dataSetPtr, int selection ){
 	} else {
 	    printf( "%i\t\t%5i\t\t\t%6i\t\t\t%5.2lf%%\n", ( dataSetPtr + selection )->year, calculateExpressors( ( dataSetPtr + selection )->percentage , ( dataSetPtr + selection )->sampleSize ), ( dataSetPtr + selection )->sampleSize, ( dataSetPtr + selection )->percentage );
 	}
-}
+}*/
 
 // read in a given space delimited text file containing data strucure "year(integer) percentage(float) sampleSize(integer)" and place contents in an array of dataPoint_t structs, prints error message if unsuccessful
 // accepts a char array holding a file name to be opened and a pointer to a dataPoint_t array
 // returns an integer denoting SUCCESS or FILE_READ_ERROR
-int readInFromFile( char fileName[], dataPoint_t *dataSetPtr ) {
+int readInFromFile( char fileName[], facility_t *facilitiesPtr ) {
     FILE *filePtr;
     int index = 0;
     char line[ LINE_LENGTH ];
     int errnum;
 
     if( filePtr = fopen( fileName, "r" ) ) {
-		while( index < NUM_YEARS && fgets( line, LINE_LENGTH, filePtr ) ) {
-			sscanf( line, "%i %lf %i", &( dataSetPtr + index )->year, &( dataSetPtr + index )->percentage, &( dataSetPtr + index )->sampleSize );
+		while( index < NUM_ITEMS && fgets( line, LINE_LENGTH, filePtr ) ) {
+			sscanf( line, "%[^|]|%[^|]|%[^|]|%lf", &( facilitiesPtr + index )->name, &( facilitiesPtr + index )->city, &( facilitiesPtr + index )->state, &( facilitiesPtr + index )->distance );
 			index++;
 		}
 		fclose( filePtr );
@@ -280,5 +282,6 @@ int readInFromFile( char fileName[], dataPoint_t *dataSetPtr ) {
 // takes no parameters
 // returns nothing
 void rollCredits (void) {
-	printf( "\n\nResults were provided by Andrew King\n\n" );
+	printf( "\n\nResults were provided by Andrew King\n\nPress [Enter] to exit. " );
+	getchar();
 }
