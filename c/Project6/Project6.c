@@ -1,14 +1,16 @@
+// Andrew King
+// COP2220
+// Project 6
+// 04/05/17
+
 #include <ctype.h>
 #include <errno.h>
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #define NUM_ITEMS 100
 #define LINE_LENGTH 100
-//#define MIN_MODE 0
-//#define MAX_MODE 1
 #define SUCCESS 0
 #define FILE_READ_ERROR 1
 #define LEN_NAME 75
@@ -20,70 +22,50 @@ typedef struct {
     double distance;
 } facility_t;
 
-//int calculateExpressors( double percentage, int sampleSize );
-//int calculateHighestOrLowest( dataPoint_t *dataSetPtr, int mode );
-//void displayWelcomeMessage( void );
+void clearStdIn( void );
+void displayWelcomeMessage( void );
 char getYesOrNo( void );
 void getFileName( char *fileNamePtr, char defaultFileName[] );
-//int getSelection( dataPoint_t *dataSetPtr );
-//int isYearValid( dataPoint_t *dataSetPtr, int year );
-int openAndReadFile( char defaultFileName[], facility_t *facilitiesPtr );
-//void printSummary( dataPoint_t *dataSetPtr, int selection );
-int readInFromFile( char fileName[], facility_t *facilitiesPtr );
+void getSelection(int *selectionPtr);
+int openAndReadFile( char defaultFileName[], facility_t *facilitiesPtr, int *countPtr );
+void printFirstTen(facility_t *facilitiesPtr);
+void printMenu(void);
+int readInFromFile( char fileName[], facility_t *facilitiesPtr, int *countPtr );
 void rollCredits( void );
+void searchByCity(facility_t *facilitiesPtr, int count);
+void searchByDistance(facility_t *facilitiesPtr, int count);
 
 extern int errno;
 
 int main( void ){
-	int index = 0, selection;
+	int index = 0, selection = 0, count = 0;
 	facility_t facilities[ NUM_ITEMS ] = {0};
 	char defaultFileName[] = "AutismSpeaksInfo.txt", exit;
 
-    //displayWelcomeMessage();
+    displayWelcomeMessage();
 
-    if( openAndReadFile( defaultFileName, &facilities[ 0 ] ) == SUCCESS ) {
+    if( openAndReadFile( defaultFileName, facilities, &count) == SUCCESS ) {
         do {
-            //selection = getSelection( &dataSet[ 0 ] );
-            //printSummary ( &dataSet[ 0 ], selection );
-            printf( "Do you want to exit? " );
-            exit = getYesOrNo();
-        } while( exit != 'y' );
+            selection = 0;
+            printMenu();
+            getSelection(&selection);
+            switch (selection) {
+                case 1:
+                    printFirstTen(facilities);
+                    break;
+                case 2:
+                    searchByCity(facilities, count);
+                    break;
+                case 3:
+                    searchByDistance(facilities, count);
+                    break;
+            }
+        } while( selection != 4);
     }
 
     rollCredits();
 	return SUCCESS;
 }
-
-// take a percentage and sample size and return the number of expressors
-// takes a double holding the percentage, and an integer holding the sample size
-// returns an integer holding the sample size that have expressed the trait
-int calculateExpressors( double percentage, int sampleSize ){
-	return round( sampleSize * percentage / 100 );
-}
-
-// take a pointer to an array of dataPoint_t's and returns the index of the highest or lowest percentage depending on the mode, MIN_MODE for lowest, MAX_MODE for highest
-// takes parameters of pointer to first dataPoint_t in an array holding percentage member and integer denoting either max or min mode
-// returns the integer index of the highest or lowest percentage
-/*int calculateHighestOrLowest( dataPoint_t *dataSetPtr, int mode ){
-    int index, result = 0;
-
-	if( mode == MIN_MODE ) {
-		for( index = 1; index <= NUM_YEARS - 1; index = index + 1 ) {
-			if(( dataSetPtr + result)->percentage > (dataSetPtr + index)->percentage ) {
-				result = index;
-			}
-		}
-	}
-	else{
-		for(index = 1; index <= NUM_YEARS - 1; index = index + 1){
-			if ( ( dataSetPtr + result )->percentage < ( dataSetPtr + index )->percentage ){
-				result = index;
-			}
-		}
-	}
-
-	return result;
-}*/
 
 // consumes the remaining data in stdin after input is accepted, preventing unwanted data from remaining to be inadverntaly accepted at next read-in
 // accepts nothing
@@ -99,7 +81,7 @@ void clearStdIn( void ){
 // takes no parameters
 // returns nothing
 void displayWelcomeMessage( void ){
-	printf( "Welcome to Andrew King's Sampling Calculator.\n\n" );
+	printf( "Welcome to Andrew King's Facility Information Resource.\n\n" );
 }
 
 // prompts user to enter a file name containing data, if no name is entered, uses default value
@@ -137,43 +119,18 @@ void getFileName( char *fileNamePtr, char defaultFileName[] ) {
     strcpy( fileNamePtr, fileName );
 }
 
-
-// print a prompt indicating valid choices and asking the user to choose a year or 'a' indicating all years, validates choice, and returns the index of the chosen year or NUM_YEARS for all
-// takes an pointer to an array of dataPoint_t's with member year as parameter
-// dependent function: isYearValid()
-// returns an integer indicating the users choice
-/*int getSelection( dataPoint_t *dataSetPtr ) {
-	int index, selection, year;
-	char all, c, input[ 5 ];
-
-	printf( "Information is available for:\n" );
-	for( index = 0; index <= NUM_YEARS - 1; index = index + 1 ){
-		printf( "%i ", ( dataSetPtr + index )->year );
-	}
-	printf( "\n\nWhat year do you want information for?\n" );
-	printf( "Enter a year or 'a' for all: ");
-	scanf( "%s", &input );
-	clearStdIn();
-	if( tolower( input[ 0 ] ) == 'a'){
-		selection = NUM_YEARS;
-	} else{
-		year = atoi( input );
-		selection = isYearValid( dataSetPtr, year );
-	}
-	while( selection == -1 ) {
-		printf( "Choose a valid year from the list or 'a' for all: ");
-		scanf( "%s" , &input );
-		clearStdIn();
-		if( tolower( input[ 0 ] ) == 'a' ) {
-			selection = NUM_YEARS;
-		} else {
-			year = atoi( input );
-			selection = isYearValid( dataSetPtr, year );
-		}
-	}
-
-	return selection;
-}*/
+// accepts user input from menu and validates it
+// accepts a pointer to an integer holding the user's selection
+// returns nothing
+void getSelection(int *selectionPtr) {
+    scanf("%d", selectionPtr);
+    clearStdIn();
+    while (*selectionPtr < 1 || *selectionPtr > 4) {
+        printf("Please choose an option from the menu above.\n");
+        scanf("%d", selectionPtr);
+        clearStdIn();
+    }
+}
 
 // accept yes or no, validating to only accept 'y', 'Y', 'n', or 'N', returning the choice
 // takes no parameters
@@ -195,33 +152,17 @@ char getYesOrNo( void ) {
 	return yesOrNo;
 }
 
-// takes valid years and a choice, returns the first index of the year if valid or -1 if not found
-// takes a pointer to an array of DataPoint_t's containing integer member year and an integer year as parameters
-// returns an integer holding the first index of the year if valid or -1 in not found
-/*int isYearValid( dataPoint_t *dataSetPtr, int year ) {
-	int index, position = -1;
-
-	for( index = 0; index <= NUM_YEARS - 1; index = index + 1 ) {
-		if ( ( dataSetPtr + index )->year == year ) {
-			position = index;
-			break;
-		}
-	}
-
-	return position;
-}*/
-
 // opens a file given a specified file name (or using program default) and populates an array of dataPoint_t structs
 // accepts char array containing the default file name and a pointer to an array of dataPoint_t structs
 // returns an integer denoting success
-int openAndReadFile( char defaultFileName[], facility_t *facilitiesPtr ) {
+int openAndReadFile( char defaultFileName[], facility_t *facilitiesPtr, int *countPtr ) {
     char tryAgain;
     char fileName[ FILENAME_MAX ];
 
     do {
-        getFileName( &fileName[ 0 ], defaultFileName );
+        getFileName( fileName, defaultFileName );
 
-        if( readInFromFile( &fileName[ 0 ], facilitiesPtr ) == SUCCESS ) {
+        if( readInFromFile( fileName, facilitiesPtr, countPtr ) == SUCCESS ) {
             return SUCCESS;
         } else {
             printf( "Try again? " );
@@ -230,32 +171,29 @@ int openAndReadFile( char defaultFileName[], facility_t *facilitiesPtr ) {
     } while( tryAgain == 'y' );
 }
 
-// prints a summary of the requested data in a table to stdout, either all years and the max and min or a single year
-// opted for calculating expressors and high/low as needed to save calculation time when only one year is displayed
-// takes an integer array of years, a double array of percentages, an integer array of sample sizes, and an integer indicating the users choice
-// dependent function: calculateExpressors() calculateHighestOrLowest()
+// prints first ten facilities
+// takes a pointer to an array of facility_t
 // returns nothing
-/*void printSummary( dataPoint_t *dataSetPtr, int selection ){
-    int index, highest, lowest;
+void printFirstTen(facility_t *facilitiesPtr){
+    int index;
+    for (index = 0; index < 10; index++) {
+        printf( "%s\n", (facilitiesPtr + index)->name );
+        printf( "%s, %s\n", (facilitiesPtr + index)->city, (facilitiesPtr + index)->state );
+        printf( "distance: %.2lf mi\n\n", (facilitiesPtr + index)->distance );
+    }
+}
 
-	printf( "\n\nYear\t\tTimes Observed\t\tSample Size\t\tPercentage\n" );
-	if( selection == NUM_YEARS){
-		highest = calculateHighestOrLowest( dataSetPtr, MAX_MODE );
-		lowest = calculateHighestOrLowest( dataSetPtr, MIN_MODE );
-		for( index = 0; index <= NUM_YEARS - 1; index = index + 1 ){
-			printf( "%i\t\t%5i\t\t\t%6i\t\t\t%5.2lf%%\n", ( dataSetPtr + index )->year, calculateExpressors( ( dataSetPtr +index )->percentage , ( dataSetPtr + index )->sampleSize), ( dataSetPtr + index )->sampleSize, ( dataSetPtr + index )->percentage );
-		}
-		printf( "\nHighest year: %i (%.2lf%%)\n", ( dataSetPtr + highest )->year, ( dataSetPtr + highest )->percentage );
-		printf( "Lowest year: %i (%.2lf%%)\n\n", ( dataSetPtr + lowest )->year, ( dataSetPtr + lowest )->percentage );
-	} else {
-	    printf( "%i\t\t%5i\t\t\t%6i\t\t\t%5.2lf%%\n", ( dataSetPtr + selection )->year, calculateExpressors( ( dataSetPtr + selection )->percentage , ( dataSetPtr + selection )->sampleSize ), ( dataSetPtr + selection )->sampleSize, ( dataSetPtr + selection )->percentage );
-	}
-}*/
+// prints available options
+// takes nothing
+// returns nothing
+void printMenu(void){
+    printf( "1. Display first ten resources\n2. Query resources by city\n3. Query resources by distance\n4. Exit\n" );
+}
 
-// read in a given space delimited text file containing data strucure "year(integer) percentage(float) sampleSize(integer)" and place contents in an array of dataPoint_t structs, prints error message if unsuccessful
-// accepts a char array holding a file name to be opened and a pointer to a dataPoint_t array
+// read in a given pipe delimited text file containing data strucure "name(string)|city(string)|state(string)|distance(double)" and place contents in an array of facility_t structs, prints error message if unsuccessful
+// accepts a char array holding a file name to be opened and a pointer to a facility_t array
 // returns an integer denoting SUCCESS or FILE_READ_ERROR
-int readInFromFile( char fileName[], facility_t *facilitiesPtr ) {
+int readInFromFile( char fileName[], facility_t *facilitiesPtr, int *countPtr ) {
     FILE *filePtr;
     int index = 0;
     char line[ LINE_LENGTH ];
@@ -266,6 +204,7 @@ int readInFromFile( char fileName[], facility_t *facilitiesPtr ) {
 			sscanf( line, "%[^|]|%[^|]|%[^|]|%lf", &( facilitiesPtr + index )->name, &( facilitiesPtr + index )->city, &( facilitiesPtr + index )->state, &( facilitiesPtr + index )->distance );
 			index++;
 		}
+		*countPtr = index;
 		fclose( filePtr );
 
 		return SUCCESS;
@@ -285,3 +224,246 @@ void rollCredits (void) {
 	printf( "\n\nResults were provided by Andrew King\n\nPress [Enter] to exit. " );
 	getchar();
 }
+
+// prints prompt and searches for facilities by their city
+// takes a pointer to an array of facilities and an integer denoting how many are in said array
+// returns nothing
+void searchByCity(facility_t *facilitiesPtr, int count) {
+    char queryValue[LEN_NAME];
+    int index, searchMax = 0;
+
+    printf("What city would you like to search for?\n");
+    scanf("%s", &queryValue);
+    searchMax = strlen(queryValue);
+
+    printf("\n\nFacilities in %s:\n", queryValue);
+    for (index = 0; index < count; index++) {
+        if (strncasecmp((facilitiesPtr + index)->city, queryValue, searchMax) == 0) {
+            printf("%s\n", (facilitiesPtr + index)->name);
+            printf("%s, %s\n", (facilitiesPtr + index)->city, (facilitiesPtr + index)->state);
+            printf("distance: %.2lf mi\n\n", (facilitiesPtr + index)->distance);
+
+        }
+    }
+}
+
+// prints prompt and searches for facilities by distance
+// takes a pointer to an array of facilities and an integer denoting how many are in said array
+// returns nothing
+void searchByDistance(facility_t *facilitiesPtr, int count) {
+    double queryValue = 0;
+    int index, searchMax = 0;
+
+    printf("How many miles away would you like to search for?\n");
+    scanf("%lf", &queryValue);
+    clearStdIn();
+
+    printf("\n\nFacilities within %.0lf mi:\n", queryValue);
+    for (index = 0; index < count; index++) {
+        if ((facilitiesPtr + index)->distance <= queryValue) {
+            printf("%s\n", (facilitiesPtr + index)->name);
+            printf("%s, %s\n", (facilitiesPtr + index)->city, (facilitiesPtr + index)->state);
+            printf("distance: %.2lf mi\n\n", (facilitiesPtr + index)->distance);
+
+        }
+    }
+}
+
+
+/*
+BEGIN TEST DATA
+
+FIRST TEN FACILITIES:
+A Golden Life Personal Care Home, LLC
+Snellville, GA
+distance: 286.38 mi
+
+Active Day Center
+Charleston, SC
+distance: 194.13 mi
+
+Active Day Center
+Florence, SC
+distance: 290.55 mi
+
+Active Day Center
+Georgetown, SC
+distance: 249.76 mi
+
+Active Day Center
+Goose Creek, SC
+distance: 206.53 mi
+
+Active Day Center
+Greenwood, SC
+distance: 273.48 mi
+
+Active Day Center
+Myrtle Beach, SC
+distance: 283.28 mi
+
+Active Day Center
+Ridgeland, SC
+distance: 154.28 mi
+
+Active Day Center
+Sumter, SC
+distance: 259.20 mi
+
+Active Day Center
+Winnsboro, SC
+distance: 283.63 mi
+
+IN "sumter":
+Active Day Center
+Sumter, SC
+distance: 259.20 mi
+
+
+WITHIN 150mi:
+Angelwood Inc.
+Jacksonville, FL
+distance: 8.31 mi
+
+LIFE
+Savannah, GA
+distance: 119.89 mi
+
+LYF Inc.
+Wesley Chapel, FL
+distance: 148.77 mi
+
+Marion County School Board
+Ocala, FL
+distance: 85.95 mi
+
+Osceola ARC
+Kissimmee, FL
+distance: 137.66 mi
+
+University Behavioral Center
+Orlando, FL
+distance: 120.08 mi
+
+
+
+BEGIN SAMPLE RUN
+
+
+Welcome to Andrew King's Facility Information Resource.
+
+Enter a file name (default: AutismSpeaksInfo.txt): badFileName
+badFileName - No such file or directory
+Try again? (Y/N) y
+Enter a file name (default: AutismSpeaksInfo.txt): illegal*File?Name
+Invalid file name.
+Please try again: validBadFileName
+validBadFileName - No such file or directory
+Try again? (Y/N) y
+Enter a file name (default: AutismSpeaksInfo.txt):
+1. Display first ten resources
+2. Query resources by city
+3. Query resources by distance
+4. Exit
+1
+A Golden Life Personal Care Home, LLC
+Snellville, GA
+distance: 286.38 mi
+
+Active Day Center
+Charleston, SC
+distance: 194.13 mi
+
+Active Day Center
+Florence, SC
+distance: 290.55 mi
+
+Active Day Center
+Georgetown, SC
+distance: 249.76 mi
+
+Active Day Center
+Goose Creek, SC
+distance: 206.53 mi
+
+Active Day Center
+Greenwood, SC
+distance: 273.48 mi
+
+Active Day Center
+Myrtle Beach, SC
+distance: 283.28 mi
+
+Active Day Center
+Ridgeland, SC
+distance: 154.28 mi
+
+Active Day Center
+Sumter, SC
+distance: 259.20 mi
+
+Active Day Center
+Winnsboro, SC
+distance: 283.63 mi
+
+1. Display first ten resources
+2. Query resources by city
+3. Query resources by distance
+4. Exit
+2
+What city would you like to search for?
+sumter
+
+
+Facilities in sumter:
+Active Day Center
+Sumter, SC
+distance: 259.20 mi
+
+1. Display first ten resources
+2. Query resources by city
+3. Query resources by distance
+4. Exit
+3
+How many miles away would you like to search for?
+150
+
+
+Facilities within 150 mi:
+Angelwood Inc.
+Jacksonville, FL
+distance: 8.31 mi
+
+LIFE
+Savannah, GA
+distance: 119.89 mi
+
+LYF Inc.
+Wesley Chapel, FL
+distance: 148.77 mi
+
+Marion County School Board
+Ocala, FL
+distance: 85.95 mi
+
+Osceola ARC
+Kissimmee, FL
+distance: 137.66 mi
+
+University Behavioral Center
+Orlando, FL
+distance: 120.08 mi
+
+1. Display first ten resources
+2. Query resources by city
+3. Query resources by distance
+4. Exit
+4
+
+
+Results were provided by Andrew King
+
+Press [Enter] to exit.
+
+
+*/
